@@ -7,7 +7,7 @@ from keras.models import Sequential
 from keras.layers import Dense
 from keras.optimizers import Adam
 
-### parameters
+# parameters
 EPISODES = 300
 MAX_SCORE = 250
 ENV_NAME = 'CartPole-v0'
@@ -21,7 +21,7 @@ STABLE_RUNTIME = 100
 STABLE_THRESHOLD = 195
 
 
-### when finish, build the graph of score and loss
+# when finish, build the graph of score and loss
 class Score_Logger:
     def __init__(self):
         self.score = []
@@ -134,18 +134,17 @@ class Score_Logger:
         plt.xlabel('epoch')
         plt.ylabel('loss')
 
-
         # create the angle plot
         plt.sca(pic_angle)
         plt.plot(self.step, self.angle, 'b-', linewidth=1, label='radian')
         plt.legend(loc='upper left')
         plt.xlabel('epoch')
         plt.ylabel('angle/radian')
-
+        x = Sequential()
         plt.show()
 
 
-### principal class for DQN algorithm
+# principal class for DQN algorithm
 class DQNAgent:
     def __init__(self, state_size, action_size):
         self.state_size = state_size  # the size for input is the size of state space which is 4
@@ -181,7 +180,7 @@ class DQNAgent:
         for state, action, reward, next_state, done in minibatch:
             target = reward
             if not done:
-                ### principal code for DQN,we update the Q-value by using the q-value formula
+                # principal code for DQN,we update the Q-value by using the q-value formula
                 target = (1 - ALPHA) * (self.model.predict(state)[0][action]) + ALPHA * (reward + GAMMA *
                                                                                          np.amax(self.model.predict(
                                                                                              next_state)[0]))
@@ -223,7 +222,7 @@ class DQNAgent:
         return self.mean_loss
 
 
-### main loop
+# main loop
 if __name__ == "__main__":
     ### gym environment set up start
     env = gym.make(ENV_NAME)
@@ -235,7 +234,7 @@ if __name__ == "__main__":
     done = False
     batch_size = 32
     # agent.load("./save/cartpole-dqn.h5")
-    ### gym environment set up end
+    # gym environment set up end
     run = 0
     epoch = 0  # to match the epoch of the angle
     for e in range(EPISODES):
@@ -243,7 +242,8 @@ if __name__ == "__main__":
             score_logger.isStable()
             score_logger.average_score()
         run += 1
-        state = env.reset()  # when the done is 'true' or in this episode we score 499,reset the environment and start again
+        state = env.reset()  # when the done is 'true' or in this episode we score 499,
+        # reset the environment and start again
         state = np.reshape(state, [1, state_size])
         score = 0
         for time in range(500):
@@ -253,7 +253,8 @@ if __name__ == "__main__":
             action = agent.act(state)  # get action from the agent
             next_state, reward, done, _ = env.step(action)
             score_logger.add_angle(next_state[2], epoch)
-            reward = reward if not done else -10  # if the in this time the pole didn't fall we set reward as 1 else we set it as -10
+            reward = reward if not done else -10  # if the in this time the pole didn't fall
+            # we set reward as 1 else we set it as -10
             next_state = np.reshape(next_state, [1, state_size])
             agent.remember(state, action, reward, next_state, done)  # store the data in the memory
             state = next_state
